@@ -1,14 +1,17 @@
 'use client'
 
 import { useState } from 'react'
-import { 
-  Store, 
-  MessageSquare, 
-  Sparkles, 
+import Link from 'next/link'
+import {
+  Store,
+  MessageSquare,
+  Sparkles,
   RefreshCw,
-  User,
-  Bot
+  Copy,
+  Check
 } from 'lucide-react'
+
+const SHOP_NAME = 'The Coffee Nook'
 
 export default function Dashboard() {
   const [knowledge, setKnowledge] = useState(`We are 'The Coffee Nook'.
@@ -16,14 +19,15 @@ Hours: Mon-Fri 7am-7pm, Sat-Sun 8am-5pm.
 Wifi Password: 'espresso_shots'.
 Parking: Free parking in the back lot, spots 12-20.
 Refund Policy: No refunds on consumed food. Exchanges only within 10 mins.`)
-  
+
   const [syncing, setSyncing] = useState(false)
   const [aiStatus, setAiStatus] = useState<'online' | 'syncing'>('online')
+  const [copied, setCopied] = useState(false)
 
   const handleUpdate = () => {
     setSyncing(true)
     setAiStatus('syncing')
-    
+
     // Simulate AI update
     setTimeout(() => {
       setSyncing(false)
@@ -31,13 +35,12 @@ Refund Policy: No refunds on consumed food. Exchanges only within 10 mins.`)
     }, 2000)
   }
 
-  // Sample chat messages
-  const chatMessages = [
-    { role: 'customer', text: 'What are your opening hours?' },
-    { role: 'bot', text: 'We\'re open Mon-Fri 7am-7pm, and Sat-Sun 8am-5pm.' },
-    { role: 'customer', text: 'Do you have wifi?' },
-    { role: 'bot', text: 'Yes! Our wifi password is \'espresso_shots\'.' },
-  ]
+  const handleCopyLink = () => {
+    const chatLink = `${typeof window !== 'undefined' ? window.location.origin : ''}/chat`
+    navigator.clipboard.writeText(chatLink)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
 
   return (
     <div className="flex h-screen bg-slate-50">
@@ -47,23 +50,22 @@ Refund Policy: No refunds on consumed food. Exchanges only within 10 mins.`)
         <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-lg flex items-center justify-center shadow-sm">
           <Sparkles className="w-5 h-5 text-white" />
         </div>
-        
+
         {/* Navigation Icons */}
         <nav className="flex flex-col space-y-4">
-          <button className="w-10 h-10 flex items-center justify-center rounded-lg bg-indigo-50 text-indigo-600 hover:bg-indigo-100 transition-colors">
+          <Link href="/" className="w-10 h-10 flex items-center justify-center rounded-lg bg-indigo-50 text-indigo-600 hover:bg-indigo-100 transition-colors">
             <Store className="w-5 h-5" />
-          </button>
-          <button className="w-10 h-10 flex items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 transition-colors">
+          </Link>
+          <Link href="/chat" className="w-10 h-10 flex items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 transition-colors">
             <MessageSquare className="w-5 h-5" />
-          </button>
+          </Link>
         </nav>
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 flex overflow-hidden">
-        {/* Left Pane - The Brain */}
-        <div className="flex-1 p-8 overflow-auto">
-          <div className="max-w-3xl">
+      <main className="flex-1 overflow-auto">
+        <div className="p-8">
+          <div className="max-w-4xl">
             {/* Header */}
             <div className="mb-6">
               <div className="flex items-center justify-between mb-2">
@@ -99,23 +101,41 @@ Refund Policy: No refunds on consumed food. Exchanges only within 10 mins.`)
                   <p className="text-xs text-slate-500">
                     {knowledge.length} characters
                   </p>
-                  <button
-                    onClick={handleUpdate}
-                    disabled={syncing}
-                    className="px-6 py-2.5 bg-indigo-600 text-white rounded-lg font-medium text-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
-                  >
-                    {syncing ? (
-                      <>
-                        <RefreshCw className="w-4 h-4 animate-spin" />
-                        <span>Updating AI...</span>
-                      </>
-                    ) : (
-                      <>
-                        <Sparkles className="w-4 h-4" />
-                        <span>Update AI</span>
-                      </>
-                    )}
-                  </button>
+                  <div className="flex items-center space-x-3">
+                    <button
+                      onClick={handleCopyLink}
+                      className="px-6 py-2.5 bg-slate-200 text-slate-700 rounded-lg font-medium text-sm hover:bg-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 transition-all shadow-sm flex items-center space-x-2"
+                    >
+                      {copied ? (
+                        <>
+                          <Check className="w-4 h-4" />
+                          <span>Copied!</span>
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="w-4 h-4" />
+                          <span>Copy Chat Link</span>
+                        </>
+                      )}
+                    </button>
+                    <button
+                      onClick={handleUpdate}
+                      disabled={syncing}
+                      className="px-6 py-2.5 bg-indigo-600 text-white rounded-lg font-medium text-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+                    >
+                      {syncing ? (
+                        <>
+                          <RefreshCw className="w-4 h-4 animate-spin" />
+                          <span>Updating AI...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles className="w-4 h-4" />
+                          <span>Update AI</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -128,78 +148,6 @@ Refund Policy: No refunds on consumed food. Exchanges only within 10 mins.`)
                 <li>• Use clear, structured information (bullet points work great)</li>
                 <li>• Update regularly to keep your AI current</li>
               </ul>
-            </div>
-          </div>
-        </div>
-
-        {/* Right Pane - The Preview */}
-        <div className="w-96 bg-white border-l border-slate-200 flex flex-col">
-          {/* Preview Header */}
-          <div className="px-6 py-4 border-b border-slate-200">
-            <h2 className="text-sm font-semibold text-slate-900 mb-1">Live Preview</h2>
-            <p className="text-xs text-slate-500">Customer chat interface</p>
-          </div>
-
-          {/* Chat Container */}
-          <div className="flex-1 overflow-auto p-6">
-            <div className="max-w-sm mx-auto">
-              {/* Mobile Frame */}
-              <div className="bg-slate-50 rounded-2xl border border-slate-200 shadow-lg overflow-hidden">
-                {/* Mobile Header */}
-                <div className="bg-white px-4 py-3 border-b border-slate-200 flex items-center space-x-3">
-                  <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-full flex items-center justify-center">
-                    <Sparkles className="w-4 h-4 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-semibold text-slate-900">No-Wait Assistant</h3>
-                    <p className="text-xs text-green-600">● Online</p>
-                  </div>
-                </div>
-
-                {/* Chat Messages */}
-                <div className="p-4 space-y-4 bg-white min-h-96">
-                  {chatMessages.map((message, index) => (
-                    <div
-                      key={index}
-                      className={`flex ${message.role === 'customer' ? 'justify-end' : 'justify-start'}`}
-                    >
-                      <div className={`flex items-start space-x-2 max-w-[80%] ${message.role === 'customer' ? 'flex-row-reverse space-x-reverse' : ''}`}>
-                        <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 ${
-                          message.role === 'customer' 
-                            ? 'bg-slate-200' 
-                            : 'bg-indigo-100'
-                        }`}>
-                          {message.role === 'customer' ? (
-                            <User className="w-3.5 h-3.5 text-slate-600" />
-                          ) : (
-                            <Bot className="w-3.5 h-3.5 text-indigo-600" />
-                          )}
-                        </div>
-                        <div className={`px-3 py-2 rounded-lg text-sm ${
-                          message.role === 'customer'
-                            ? 'bg-indigo-600 text-white rounded-tr-sm'
-                            : 'bg-slate-100 text-slate-900 rounded-tl-sm'
-                        }`}>
-                          {message.text}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Input Area */}
-                <div className="p-3 bg-slate-50 border-t border-slate-200">
-                  <div className="flex items-center space-x-2 bg-white rounded-lg border border-slate-200 px-3 py-2">
-                    <input
-                      type="text"
-                      placeholder="Ask a question..."
-                      className="flex-1 text-sm bg-transparent border-none outline-none text-slate-900 placeholder-slate-400"
-                      disabled
-                    />
-                    <MessageSquare className="w-4 h-4 text-slate-400" />
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
         </div>
