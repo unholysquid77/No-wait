@@ -20,7 +20,7 @@ export default function ChatPage() {
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
 
-  // --- THE REAL INTEGRATION ---
+
   const fetchAIResponse = async (query: string) => {
     try {
       const response = await fetch('http://localhost:5000/chat', {
@@ -41,13 +41,11 @@ export default function ChatPage() {
   const handleSend = async () => {
     if (!input.trim()) return
 
-    // Add user message
     const userMessage = { role: 'user', text: input }
     setMessages(prev => [...prev, userMessage])
     setInput('')
     setIsLoading(true)
 
-    // Fetch real AI response
     const aiText = await fetchAIResponse(userMessage.text)
     
     const botResponse = { role: 'bot', text: aiText }
