@@ -20,27 +20,25 @@ export default function ChatPage() {
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
 
-  // Sample responses based on keywords
-  const getSampleResponse = (query: string): string => {
-    const lower = query.toLowerCase()
-    
-    if (lower.includes('hour') || lower.includes('open') || lower.includes('close')) {
-      return "We're open Mon-Fri 7am-7pm, and Sat-Sun 8am-5pm. Hope to see you soon!"
+  // --- THE REAL INTEGRATION ---
+  const fetchAIResponse = async (query: string) => {
+    try {
+      const response = await fetch('http://localhost:5000/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ query }),
+      })
+      const data = await response.json()
+      return data.answer
+    } catch (error) {
+      console.error("API Error:", error)
+      return "I'm having trouble connecting to the shop brain right now. Is the Python backend running?"
     }
-    if (lower.includes('wifi') || lower.includes('password')) {
-      return "Yes, we have free wifi! The password is 'espresso_shots'."
-    }
-    if (lower.includes('park')) {
-      return "Great question! We have free parking in the back lot, spots 12-20 are reserved for customers."
-    }
-    if (lower.includes('refund') || lower.includes('exchange')) {
-      return "Our refund policy: No refunds on consumed food, but we do exchanges within 10 minutes of purchase."
-    }
-    
-    return "I'd be happy to help! Try asking me about our hours, wifi, parking, or refund policy."
   }
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (!input.trim()) return
 
     // Add user message
@@ -49,12 +47,12 @@ export default function ChatPage() {
     setInput('')
     setIsLoading(true)
 
-    // Simulate bot response delay
-    setTimeout(() => {
-      const botResponse = { role: 'bot', text: getSampleResponse(input) }
-      setMessages(prev => [...prev, botResponse])
-      setIsLoading(false)
-    }, 500)
+    // Fetch real AI response
+    const aiText = await fetchAIResponse(userMessage.text)
+    
+    const botResponse = { role: 'bot', text: aiText }
+    setMessages(prev => [...prev, botResponse])
+    setIsLoading(false)
   }
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -80,7 +78,7 @@ export default function ChatPage() {
           </div>
           <div>
             <h1 className="text-lg font-semibold text-white">Chat with {SHOP_NAME}</h1>
-            <p className="text-sm text-indigo-100">Always here to help</p>
+            <p className="text-sm text-indigo-100">AI Support • Online</p>
           </div>
         </div>
 
@@ -150,7 +148,7 @@ export default function ChatPage() {
               <Send className="w-4 h-4" />
             </button>
           </div>
-          <p className="text-xs text-slate-500 mt-2">Press Enter to send</p>
+          <p className="text-xs text-slate-500 mt-2">Powered by RAG-Lite & Python</p>
         </div>
       </div>
     </div>
