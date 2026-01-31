@@ -9,12 +9,10 @@ from langchain.chains import RetrievalQA
 from langchain.prompts import PromptTemplate
 
 app = Flask(__name__)
-CORS(app)  # Allows your Next.js app to talk to this Python script
+CORS(app) 
 
-# --- GLOBAL STATE (The Brain) ---
 vector_store = None
 
-# Default knowledge base so it works immediately for the demo
 DEFAULT_TEXT = """
 We are 'The Coffee Nook'.
 Hours: Mon-Fri 7am-7pm, Sat-Sun 8am-5pm.
@@ -34,8 +32,6 @@ def init_vector_store(text_content):
     embeddings = OpenAIEmbeddings()
     return FAISS.from_documents(texts, embeddings)
 
-# Initialize with default text on startup
-# MAKE SURE YOUR API KEY IS SET IN TERMINAL: export OPENAI_API_KEY=sk-...
 if os.environ.get("OPENAI_API_KEY"):
     print("Training AI on default data...")
     vector_store = init_vector_store(DEFAULT_TEXT)
