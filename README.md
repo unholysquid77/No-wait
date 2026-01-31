@@ -3,6 +3,7 @@
 Built for Code Turf 2026 @ Manipal University Jaipur 
 
 💡 The Problem
+
 Small businesses like cafes and barbershops are bogged down by repetitive inquiries regarding hours, pricing, and parking. "No-Wait" provides an instant, RAG-lite (Retrieval-Augmented Generation) solution that allows shop owners to turn their FAQ text into a custom, grounded AI assistant in seconds.
 
 🛠 Tech Stack
